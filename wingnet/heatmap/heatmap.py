@@ -2,10 +2,10 @@
 import constructer as ch
 import tensorflow as tf
 import numpy as np
-import cv2
 
 # import modules
-import wingnet.models.wingnet_fullyconv as fc
+from skimage import io
+from models import wingnet_fullyconv as fc
 
 # GLOBAL VARIABLES
 NUM_CLASSES = 4
