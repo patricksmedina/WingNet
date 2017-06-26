@@ -1,6 +1,6 @@
 # import packages
+import matplotlib.image as mpimg
 import tensorflow as tf
-import skimage.io as io
 import numpy as np
 import argparse
 import os
@@ -34,3 +34,15 @@ assert os.path.isdir(args["classifydir"][0]), \
 # create the save directory if it doesn't exist.
 if not os.path.isdir(args["savedir"][0]):
     os.mkdir(args["savedir"][0])
+
+for fname in os.listdir(args["classifydir"][0]):
+    # skip annoying hidden files
+    if fname.startswith("."):
+        continue
+
+    # load the image file
+    wing_img = mpimg.imread(os.path.join(args["classifydir"][0], fname))
+
+    # construct heatmap
+    heatmap = heatmap.compute_heatmap(wing_img)
+    generate_image_mask(heatmap, os.path.join(args["savedir"][0], fname))
