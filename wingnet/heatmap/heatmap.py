@@ -1,10 +1,10 @@
 # import packages
+import matplotlib.image as mpimg
 import constructer as ch
 import tensorflow as tf
 import numpy as np
 
 # import modules
-from skimage import io
 from models import wingnet_fullyconv as fc
 
 # GLOBAL VARIABLES
@@ -16,7 +16,7 @@ BB_ROW = 32
 BB_COL = 32
 BB_STRIDE = 5
 
-def compute_heatmap(wing_name):
+def compute_heatmap(wing_img):
     """
     Constructs the probability heatmap for a given wing image.
 
@@ -46,7 +46,6 @@ def compute_heatmap(wing_name):
                                 bb_points_col.ravel().reshape(-1, 1)))
 
     # load the image and allocate space for the probabilities array
-    image = cv2.imread(wing_name)
     probs = np.zeros((bb_points_dom.shape[0], NUM_CLASSES))
 
     #
@@ -75,16 +74,17 @@ def compute_heatmap(wing_name):
                 saver.restore(sess, ckpt.model_checkpoint_path)
 
                 for i, row in enumerate(bb_points_dom):
-                    temp_prob = sess.run(softmax_probs, feed_dict = {x: image[row[0]:(row[0] + BB_ROW), \
-                                                                          row[1]:(row[1] + BB_COL), :]})
+                    temp_prob = sess.run(softmax_probs,
+                                         feed_dict = {x: image[row[0]:(row[0] + BB_ROW), \
+                                                               row[1]:(row[1] + BB_COL), :]})
                     probs[i, :] = temp_prob.reshape((1, NUM_CLASSES))
 
-                # this total distance is not true near the boundaries, but should be zero there anyways
-                heatmap = ch.construct_heatmap(bb_points_dom,
-                                               probs,
-                                               IMG_ROW,
-                                               IMG_COL,
-                                               bb_points_dom.shape[0])
+    # reweight the probabilities based off of distance to a central point
+    heatmap = ch.construct_heatmap(bb_points_dom,
+                                   probs,
+                                   IMG_ROW,
+                                   IMG_COL,
+                                   bb_points_dom.shape[0])
 
     return(np.flipud(heatmap))
 
@@ -93,6 +93,6 @@ def generate_image_mask(heatmap, wing_name):
     heatmap = np.round(heatmap * 255).astype(np.uint8)
 
     # save the image mask
-    cv2.imwrite("{0}_mask.jpg".format(wing_name),
-                img = heatmap,
-                params = [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+    mpimg.imsave(fname="{0}_mask.png".format(wing_name),
+                 arr=heatmap,
+                 cmap="Greys")
