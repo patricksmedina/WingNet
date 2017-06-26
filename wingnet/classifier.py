@@ -1,4 +1,3 @@
-
 # import packages
 import matplotlib.pyplot as plt
 import constructer as ch
@@ -9,7 +8,7 @@ import cv2
 import os
 
 # import modules
-import wingnet.models.wingnet_fullyconv as fc
+import wingnet.wingnet_fullyconv as fc
 
 # GLOBAL VARIABLES
 NUM_CLASSES = 4
@@ -75,11 +74,6 @@ with tf.Graph().as_default() as g:
 
             if wing_name.startswith("."):
                 continue
-
-            print("[INFO] Computing probabilities across image " + wing_name)
-
-            # start the timer.
-            start = timeit.default_timer()
 
             # load the image
             sample_wing = os.path.join(wings_files_dir, wing_name)

@@ -1,4 +1,3 @@
-
 # import packages
 import matplotlib.pyplot as plt
 import constructer as ch
@@ -9,7 +8,7 @@ import cv2
 import os
 
 # import modules
-import wingnet.models.wingnet_fullyconv as fc
+import wingnet.wingnet_fullyconv as fc
 
 # GLOBAL VARIABLES
 NUM_CLASSES = 4
