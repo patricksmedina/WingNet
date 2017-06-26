@@ -93,6 +93,6 @@ def generate_image_mask(heatmap, wing_name):
     heatmap = np.round(heatmap * 255).astype(np.uint8)
 
     # save the image mask
-    cv2.imwrite("{0}_.jpg".format(wing_name),
+    cv2.imwrite("{0}_mask.jpg".format(wing_name),
                 img = heatmap,
                 params = [int(cv2.IMWRITE_JPEG_QUALITY), 100])

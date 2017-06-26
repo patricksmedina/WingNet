@@ -1,8 +1,11 @@
 cimport numpy as cnp
 import numpy as np
 
-cpdef construct_heatmap(long[:, :] bb_points,  double[:, :] probs,
-                        int img_row, int img_col, int num_probs):
+cpdef construct_heatmap(long[:, :] bb_points,
+                        double[:, :] probs,
+                        int img_row,
+                        int img_col,
+                        int num_probs):
 
     # allocate memory for the batch output
     cdef float[:, :] heatmap = np.zeros((img_row, img_col), dtype = np.float32)
