@@ -16,7 +16,13 @@ BB_ROW = 32
 BB_COL = 32
 BB_STRIDE = 5
 
-def construct_heatmap(fname):
+def compute_heatmap(wing_name):
+    """
+    Constructs the probability heatmap for a given wing image.
+
+    Returns numpy array of weighted probabilities of a pixel being a feature.
+    """
+
     global NUM_CLASSES, IMG_ROW, IMG_COL, IMG_CHN, BB_COL, BB_ROW, BB_STRIDE
 
     #
@@ -38,6 +44,10 @@ def construct_heatmap(fname):
 
     bb_points_dom = np.hstack(( bb_points_row.ravel().reshape(-1, 1),
                                 bb_points_col.ravel().reshape(-1, 1)))
+
+    # load the image and allocate space for the probabilities array
+    image = cv2.imread(wing_name)
+    probs = np.zeros((bb_points_dom.shape[0], NUM_CLASSES))
 
     #
     # TENSORFLOW GRAPH
@@ -64,9 +74,6 @@ def construct_heatmap(fname):
                 # Restores from checkpoint
                 saver.restore(sess, ckpt.model_checkpoint_path)
 
-                image = cv2.imread(fname)
-                probs = np.zeros((bb_points_dom.shape[0], NUM_CLASSES))
-
                 for i, row in enumerate(bb_points_dom):
                     temp_prob = sess.run(softmax_probs, feed_dict = {x: image[row[0]:(row[0] + BB_ROW), \
                                                                           row[1]:(row[1] + BB_COL), :]})
@@ -79,24 +86,13 @@ def construct_heatmap(fname):
                                                IMG_COL,
                                                bb_points_dom.shape[0])
 
-    return(np.asarray(heatmap))
+    return(np.flipud(heatmap))
 
-# plt.figure()
-# mycntr = plt.contourf(pixel_points_col,
-#                       pixel_points_row,
-#                       np.flipud(heatmap),
-#                       cmap = "RdBu_r",
-#                       levels = np.linspace(0,
-#                                            1,
-#                                            31))
-# plt.colorbar(mycntr, shrink = 0.9)
-# plt.savefig("heatmap_{0}.png".format(wing_name), dpi = 300)
-#
-# # convert to greyscale image
-# heatmap = np.round(heatmap * 255).astype(np.uint8)
-# cv2.imwrite("wingmap_{0}.jpg".format(wing_name),
-#             img = heatmap,
-#             params = [int(cv2.IMWRITE_JPEG_QUALITY), 100])
-#
-# end = timeit.default_timer() - start
-# print("[INFO] Finished sample {0} in {1:.03f} seconds".format(wing_name, end))
+def generate_image_mask(heatmap, wing_name):
+    # convert to greyscale image
+    heatmap = np.round(heatmap * 255).astype(np.uint8)
+
+    # save the image mask
+    cv2.imwrite("{0}_.jpg".format(wing_name),
+                img = heatmap,
+                params = [int(cv2.IMWRITE_JPEG_QUALITY), 100])
