@@ -1,20 +1,20 @@
 # import packages
 import matplotlib.image as mpimg
-import constructer as ch
 import tensorflow as tf
 import numpy as np
+import os
 
 # import modules
-from models import wingnet_fullyconv as fc
+from wingnet.heatmap.models import wingnet_fullyconv as fc
+from wingnet.heatmap import normalize_probs as ch
 
 # GLOBAL VARIABLES
-NUM_CLASSES = 4
-IMG_ROW = 1200
-IMG_COL = 1600
-IMG_CHN = 3
 BB_ROW = 32
 BB_COL = 32
 BB_STRIDE = 5
+NUM_CLASSES = 4
+CHECKPOINT_DIR = "/models/model_logs/"
+
 
 def compute_heatmap(wing_img):
     """
@@ -23,11 +23,13 @@ def compute_heatmap(wing_img):
     Returns numpy array of weighted probabilities of a pixel being a feature.
     """
 
-    global NUM_CLASSES, IMG_ROW, IMG_COL, IMG_CHN, BB_COL, BB_ROW, BB_STRIDE
+    global NUM_CLASSES, BB_COL, BB_ROW, BB_STRIDE, CHECKPOINT_DIR
 
     #
     # CONSTRUCT THE PIXEL DOMAIN AND THE BOUNDING BOX DOMAIN
     #
+
+    IMG_ROW, IMG_COL, IMG_CHN = wing_img.shape
 
     pixel_points_row = np.arange(IMG_ROW)
     pixel_points_col = np.arange(IMG_COL)
@@ -68,15 +70,17 @@ def compute_heatmap(wing_img):
         tf.logging.set_verbosity(tf.logging.ERROR)
 
         with tf.Session() as sess:
-            ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+            ckpt = tf.train.get_checkpoint_state(os.path.dirname(__file__) + CHECKPOINT_DIR)
+            print(ckpt)
             if ckpt and ckpt.model_checkpoint_path:
                 # Restores from checkpoint
                 saver.restore(sess, ckpt.model_checkpoint_path)
 
                 for i, row in enumerate(bb_points_dom):
                     temp_prob = sess.run(softmax_probs,
-                                         feed_dict = {x: image[row[0]:(row[0] + BB_ROW), \
-                                                               row[1]:(row[1] + BB_COL), :]})
+                                         feed_dict = {x: wing_img[row[0]:(row[0] + BB_ROW), \
+                                                                  row[1]:(row[1] + BB_COL), :]})
+
                     probs[i, :] = temp_prob.reshape((1, NUM_CLASSES))
 
     # reweight the probabilities based off of distance to a central point
@@ -95,4 +99,4 @@ def generate_image_mask(heatmap, wing_name):
     # save the image mask
     mpimg.imsave(fname="{0}_mask.png".format(wing_name),
                  arr=heatmap,
-                 cmap="Greys")
+                 cmap="Greys_r")

@@ -6,7 +6,7 @@ import argparse
 import os
 
 # import modules
-# import heatmap.heatmap as hmp
+from wingnet.heatmap import heatmap as hmp
 
 # GLOBAL VARIABLES
 NUM_CLASSES = 4
@@ -35,7 +35,7 @@ assert os.path.isdir(args["classifydir"][0]), \
 if not os.path.isdir(args["savedir"][0]):
     os.mkdir(args["savedir"][0])
 
-for fname in os.listdir(args["classifydir"][0]):
+for fname in os.listdir(args["classifydir"][0])[:2]:
     # skip annoying hidden files
     if fname.startswith("."):
         continue
@@ -43,6 +43,6 @@ for fname in os.listdir(args["classifydir"][0]):
     # load the image file
     wing_img = mpimg.imread(os.path.join(args["classifydir"][0], fname))
 
-    # construct heatmap
-    heatmap = heatmap.compute_heatmap(wing_img)
-    generate_image_mask(heatmap, os.path.join(args["savedir"][0], fname))
+    # construct heatmap and generate the image mask
+    heatmap = hmp.compute_heatmap(wing_img)
+    hmp.generate_image_mask(heatmap, os.path.join(args["savedir"][0], fname))

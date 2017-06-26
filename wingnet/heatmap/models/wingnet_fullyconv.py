@@ -31,7 +31,7 @@ from six.moves import urllib
 import tensorflow as tf
 import numpy as np
 
-import wingnet_input
+from wingnet.heatmap.models import wingnet_input as wingnet_input
 
 # Basic model parameters.
 FLAGS = tf.app.flags.FLAGS
