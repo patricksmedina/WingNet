@@ -1,15 +1,14 @@
 # import packages
 import matplotlib.pyplot as plt
-import construct_heatmap as ch
+import constructer as ch
 import tensorflow as tf
 import numpy as np
-import progressbar
 import timeit
 import cv2
 import os
 
 # import modules
-import wingnet_fullyconv as fc
+import wingnet.wingnet_fullyconv as fc
 
 # GLOBAL VARIABLES
 NUM_CLASSES = 4
