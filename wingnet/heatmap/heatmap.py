@@ -90,7 +90,7 @@ def compute_heatmap(wing_img):
                                    IMG_COL,
                                    bb_points_dom.shape[0])
 
-    return(np.flipud(heatmap))
+    return(np.asarray(heatmap))
 
 def generate_image_mask(heatmap, wing_name):
     # convert to greyscale image
