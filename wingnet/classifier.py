@@ -36,6 +36,5 @@ for fname in os.listdir(args["classifydir"][0])[:2]:
 
     # construct heatmap and generate the image mask
     heatmap = hmp.compute_heatmap(wing_img)
-
-    #TODO: Add filtering
+    heatmap *= (heatmap >= 0.25)
     hmp.generate_image_mask(heatmap, os.path.join(args["savedir"][0], fname))
