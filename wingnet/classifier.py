@@ -1,21 +1,12 @@
-# import packages
+# import external packages
 import matplotlib.image as mpimg
 import tensorflow as tf
 import numpy as np
 import argparse
 import os
 
-# import modules
+# import internal moduless
 from wingnet.heatmap import heatmap as hmp
-
-# GLOBAL VARIABLES
-NUM_CLASSES = 4
-IMG_ROW = 1200
-IMG_COL = 1600
-IMG_CHN = 3
-BB_ROW = 32
-BB_COL = 32
-BB_STRIDE = 5
 
 # parse the input arguments
 parser = argparse.ArgumentParser()
@@ -45,4 +36,6 @@ for fname in os.listdir(args["classifydir"][0])[:2]:
 
     # construct heatmap and generate the image mask
     heatmap = hmp.compute_heatmap(wing_img)
+
+    #TODO: Add filtering
     hmp.generate_image_mask(heatmap, os.path.join(args["savedir"][0], fname))
