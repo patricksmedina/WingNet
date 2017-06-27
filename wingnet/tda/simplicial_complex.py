@@ -1,5 +1,5 @@
 # external packages
-import wavetda.persistence_diagram
+from wavetda import persistence_diagram as prd
 import numpy as np
 
 # load dionysus tools
@@ -177,12 +177,18 @@ def compute_grid_diagram(image, mask, max_death=255):
     # generate numpy persistence diagram
     pd = persistence_diagram_grid(smap, p, max_death)
 
-    return(dg.PersistenceDiagram(PD = pd))
+    return(prd.PersistenceDiagram(PD = pd))
 
 if __name__ == "__main__":
-    image = np.arange(36).reshape(6,6)
-    mask = (image > 5) * 1
-
-    print(image)
-    print(mask)
-    print(mask * image)
+    ### FOR TESTING PURPOSES ONLY
+    # image = np.arange(36).reshape(6,6)
+    # mask = (image > 13) * (image < 16)
+    # mask += (image > 19) * (image < 22)
+    # mask = 1 - mask * 1
+    #
+    # print(image)
+    # print(mask)
+    # print(mask * image)
+    #
+    # testPD = compute_grid_diagram(image, mask)
+    # print(testPD.PD)
