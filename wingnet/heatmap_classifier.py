@@ -14,7 +14,8 @@ parser.add_argument('-c', '--classifydir', nargs=1, type=str, required=True,
                     help='Directory containing images to classify.')
 parser.add_argument('-s', '--savedir', nargs=1, type=str, required=True,
                     help='Directory where to save the image masks.')
-
+parser.add_argument('-t', '--threshold', nargs=1, type=float, default=0.0,
+                    help='Minimum probability threshold for the heatmap.')
 # parse argument and convert to dictionary
 args = vars(parser.parse_args())
 
@@ -26,7 +27,7 @@ assert os.path.isdir(args["classifydir"][0]), \
 if not os.path.isdir(args["savedir"][0]):
     os.mkdir(args["savedir"][0])
 
-for fname in os.listdir(args["classifydir"][0])[:2]:
+for fname in os.listdir(args["classifydir"][0])[:10]:
     # skip annoying hidden files
     if fname.startswith("."):
         continue
@@ -36,5 +37,5 @@ for fname in os.listdir(args["classifydir"][0])[:2]:
 
     # construct heatmap and generate the image mask
     heatmap = hmp.compute_heatmap(wing_img)
-    heatmap *= (heatmap >= 0.25)
+    heatmap *= (heatmap >= args["threshold"])
     hmp.generate_image_mask(heatmap, os.path.join(args["savedir"][0], fname))
