@@ -179,7 +179,7 @@ def compute_grid_diagram(image, mask, max_death=255):
 
     return(prd.PersistenceDiagram(PD = pd))
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     ### FOR TESTING PURPOSES ONLY
     # image = np.arange(36).reshape(6,6)
     # mask = (image > 13) * (image < 16)
